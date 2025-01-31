@@ -122,7 +122,8 @@ class MQTTMediaPlayer(MediaPlayerEntity):
             MediaPlayerEntityFeature.VOLUME_STEP |
             MediaPlayerEntityFeature.NEXT_TRACK |
             MediaPlayerEntityFeature.PREVIOUS_TRACK |
-            MediaPlayerEntityFeature.PLAY_MEDIA
+            MediaPlayerEntityFeature.PLAY_MEDIA |
+            MediaPlayerEntityFeature.BROWSE_MEDIA
         )
 
     @property
@@ -280,3 +281,11 @@ class MQTTMediaPlayer(MediaPlayerEntity):
             "media_id": media_id,
         }
         await async_publish(self._hass, self._cmd_topics["playmedia_topic"], json.dumps(media))
+
+    async def async_browse_media(self, media_content_type, media_content_id):
+        """Implement the websocket media browsing helper."""
+        return await media_source.async_browse_media(
+            self.hass,
+            media_content_id,
+            content_filter=lambda item: item.media_content_type,
+        )
