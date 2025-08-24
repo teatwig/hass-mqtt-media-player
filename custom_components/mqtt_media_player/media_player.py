@@ -19,7 +19,7 @@ _LOGGER = logging.getLogger(__name__)
 
 async def async_setup_entry(hass, config_entry, async_add_entities):
     """Setup entry point."""
-    player = MQTTMediaPlayer(hass, config_entry)
+    player = MQTTMediaPlayer(config_entry)
     async_add_entities([player])
     # Subscribe to the config topic to get media player configuration dynamically
     CONFIG_TOPIC = f"homeassistant/media_player/{config_entry.title}/config"
@@ -28,10 +28,9 @@ async def async_setup_entry(hass, config_entry, async_add_entities):
 
 class MQTTMediaPlayer(MediaPlayerEntity):
     """Representation of a MQTT Media Player."""
-   
-    def __init__(self, hass, config_entry):
+
+    def __init__(self, config_entry):
         """Initialize the MQTT Media Player."""
-        self._hass = hass
         self._config_entry = config_entry
         self._name = None
         # self._domain = __name__.split(".")[-2]
@@ -91,25 +90,25 @@ class MQTTMediaPlayer(MediaPlayerEntity):
 
         # Subscribe to relevant state topics
         if (check_topic := self._state_topics["state_topic"]) is not None:
-            self._subscribed.append(await async_subscribe(self._hass, check_topic, self.handle_state))
+            self._subscribed.append(await async_subscribe(self.hass, check_topic, self.handle_state))
         if (check_topic := self._state_topics["title_topic"]) is not None:
-            self._subscribed.append(await async_subscribe(self._hass, check_topic, self.handle_title))
+            self._subscribed.append(await async_subscribe(self.hass, check_topic, self.handle_title))
         if (check_topic := self._state_topics["artist_topic"]) is not None:
-            self._subscribed.append(await async_subscribe(self._hass, check_topic, self.handle_artist))
+            self._subscribed.append(await async_subscribe(self.hass, check_topic, self.handle_artist))
         if (check_topic := self._state_topics["album_topic"]) is not None:
-            self._subscribed.append(await async_subscribe(self._hass, check_topic, self.handle_album))
+            self._subscribed.append(await async_subscribe(self.hass, check_topic, self.handle_album))
         if (check_topic := self._state_topics["duration_topic"]) is not None:
-            self._subscribed.append(await async_subscribe(self._hass, check_topic, self.handle_duration))
+            self._subscribed.append(await async_subscribe(self.hass, check_topic, self.handle_duration))
         if (check_topic := self._state_topics["position_topic"]) is not None:
-            self._subscribed.append(await async_subscribe(self._hass, check_topic, self.handle_position))
+            self._subscribed.append(await async_subscribe(self.hass, check_topic, self.handle_position))
         if (check_topic := self._state_topics["volume_topic"]) is not None:
-            self._subscribed.append(await async_subscribe(self._hass, check_topic, self.handle_volume))
+            self._subscribed.append(await async_subscribe(self.hass, check_topic, self.handle_volume))
         if (check_topic := self._state_topics["albumart_topic"]) is not None:
-            self._subscribed.append(await async_subscribe(self._hass, check_topic, self.handle_albumart))
+            self._subscribed.append(await async_subscribe(self.hass, check_topic, self.handle_albumart))
         if (check_topic := self._state_topics["mediatype_topic"]) is not None:
-            self._subscribed.append(await async_subscribe(self._hass, check_topic, self.handle_mediatype))
+            self._subscribed.append(await async_subscribe(self.hass, check_topic, self.handle_mediatype))
         if (check_topic := self._availability_topics["availability_topic"]) is not None:
-            self._subscribed.append(await async_subscribe(self._hass, check_topic, self.handle_availability))
+            self._subscribed.append(await async_subscribe(self.hass, check_topic, self.handle_availability))
 
     @property
     def supported_features(self):
@@ -251,24 +250,24 @@ class MQTTMediaPlayer(MediaPlayerEntity):
 
     async def async_media_play(self):
         """Send play command via MQTT."""
-        await async_publish(self._hass, self._cmd_topics["play_topic"], self._cmd_topics["play_payload"])
+        await async_publish(self.hass, self._cmd_topics["play_topic"], self._cmd_topics["play_payload"])
 
     async def async_media_pause(self):
         """Send pause command via MQTT."""
-        await async_publish(self._hass, self._cmd_topics["pause_topic"], self._cmd_topics["pause_payload"])
+        await async_publish(self.hass, self._cmd_topics["pause_topic"], self._cmd_topics["pause_payload"])
 
     async def async_media_next_track(self):
         """Send next track command via MQTT."""
-        await async_publish(self._hass, self._cmd_topics["next_topic"], self._cmd_topics["next_payload"])
+        await async_publish(self.hass, self._cmd_topics["next_topic"], self._cmd_topics["next_payload"])
 
     async def async_media_previous_track(self):
         """Send previous track command via MQTT."""
-        await async_publish(self._hass, self._cmd_topics["previous_topic"], self._cmd_topics["previous_payload"])
+        await async_publish(self.hass, self._cmd_topics["previous_topic"], self._cmd_topics["previous_payload"])
 
     async def async_set_volume_level(self, volume):
         """Set the volume level via MQTT."""
         self._volume = round(float(volume), 2)
-        await async_publish(self._hass, self._cmd_topics["volumeset_topic"], self._volume)
+        await async_publish(self.hass, self._cmd_topics["volumeset_topic"], self._volume)
 
     async def async_play_media(self, media_type, media_id, **kwargs):
         """Sends media to play."""
@@ -280,7 +279,7 @@ class MQTTMediaPlayer(MediaPlayerEntity):
             "media_type": media_type,
             "media_id": media_id,
         }
-        await async_publish(self._hass, self._cmd_topics["playmedia_topic"], json.dumps(media))
+        await async_publish(self.hass, self._cmd_topics["playmedia_topic"], json.dumps(media))
 
     async def async_browse_media(self, media_content_type, media_content_id):
         """Implement the websocket media browsing helper."""
