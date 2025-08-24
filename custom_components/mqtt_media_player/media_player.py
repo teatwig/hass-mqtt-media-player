@@ -180,7 +180,7 @@ class MQTTMediaPlayer(MediaPlayerEntity):
     def media_image_hash(self):
         """Hash value for media image."""
         if self._album_art:
-            return hashlib.md5(self._album_art).hexdigest()[:5]       
+            return hashlib.md5(self._album_art).hexdigest()[:5]
         return None
 
     async def async_get_media_image(self):
@@ -199,7 +199,7 @@ class MQTTMediaPlayer(MediaPlayerEntity):
 
     async def handle_state(self, message):
         """Update the player state based on the MQTT state topic."""
-        print("Changed state:", message.payload)
+        _LOGGER.debug("Changed state:", message.payload)
         self._state = message.payload
         self.async_write_ha_state()
 
