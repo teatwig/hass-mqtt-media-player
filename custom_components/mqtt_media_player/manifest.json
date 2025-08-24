@@ -1,10 +1,12 @@
 {
   "domain": "mqtt_media_player",
   "name": "MQTT Media Player",
-  "version": "0",
-  "requirements": [],
+  "codeowners": ["@teatwig"],
   "config_flow": true,
   "dependencies": ["mqtt"],
-  "codeowners": ["@bkbilly"]
+  "documentation": "https://github.com/teatwig/hass-mqtt-media-player",
+  "iot_class": "local_push",
+  "issue_tracker": "https://github.com/teatwig/hass-mqtt-media-player/issues",
+  "requirements": [],
+  "version": "0.1.0"
 }
-
