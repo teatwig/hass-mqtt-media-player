@@ -127,6 +127,8 @@ class MQTTMediaPlayer(MediaPlayerEntity):
 
     @property
     def should_poll(self):
+        # we are responsible for informing HA about state changes
+        # since we are async and don't have an update method we use `schedule_update_ha_state` to push changes
         return False
 
     @property
